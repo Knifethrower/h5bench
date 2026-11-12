@@ -1,0 +1,263 @@
+{
+ "label": "chrome-headless",
+ "info": {
+  "user_agent": "Mozilla/5.0_(Windows_NT_10.0;_Win64;_x64)_AppleWebKit/537.36_(KHTML,_like_Gecko)_HeadlessChrome/157.0.0.0_Safari/537.36",
+  "platform": "Win32",
+  "window": "622x384",
+  "device_pixel_ratio": "1.000",
+  "cores": "12.0",
+  "gl_renderer": "ANGLE_(Google,_Vulkan_1.3.0_(SwiftShader_Device_(Subzero)_(0x0000C0DE)),_SwiftShader_driver)",
+  "gl_version": "WebGL_1.0_(OpenGL_ES_2.0_Chromium)"
+ },
+ "checks": {
+  "js/es2020": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/async_await": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/class_fields": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/weakref_finalization": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/webassembly": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/text_encoder_decoder": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/structured_clone": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/intl_number_format": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/shared_array_buffer": {
+   "status": "missing",
+   "detail": ""
+  },
+  "js/worker": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/append_children": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/innerhtml_parse": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/query_selector": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/get_element_by_id": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/class_list": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/dataset": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/custom_event_dispatch": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/event_bubbling": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/dom_parser": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/mutation_observer": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/matches_closest": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/clone_node_deep": {
+   "status": "pass",
+   "detail": ""
+  },
+  "storage/local_storage": {
+   "status": "pass",
+   "detail": ""
+  },
+  "storage/indexeddb_roundtrip": {
+   "status": "pass",
+   "detail": ""
+  },
+  "storage/node_fs": {
+   "status": "missing",
+   "detail": ""
+  }
+ },
+ "times": {
+  "js/loop.int_sum_1k": {
+   "ops_s": 147631.0,
+   "ms_op": 0.007
+  },
+  "js/math.sin_cos_sqrt_1k": {
+   "ops_s": 8311.0,
+   "ms_op": 0.12
+  },
+  "js/obj.alloc_vec_1k": {
+   "ops_s": 99113.0,
+   "ms_op": 0.01
+  },
+  "js/obj.update_1k_sprites": {
+   "ops_s": 158127.0,
+   "ms_op": 0.006
+  },
+  "js/prop.monomorphic_1k": {
+   "ops_s": 537063.0,
+   "ms_op": 0.002
+  },
+  "js/prop.polymorphic4_1k": {
+   "ops_s": 196017.0,
+   "ms_op": 0.005
+  },
+  "js/prop.dictionary_1k": {
+   "ops_s": 13158.0,
+   "ms_op": 0.076
+  },
+  "js/array.push_pop_1k": {
+   "ops_s": 34184.0,
+   "ms_op": 0.029
+  },
+  "js/array.map_filter_reduce_1k": {
+   "ops_s": 16850.0,
+   "ms_op": 0.059
+  },
+  "js/array.sort_1k_numbers": {
+   "ops_s": 2576.0,
+   "ms_op": 0.388
+  },
+  "js/typed.f32_vertex_fill_4k": {
+   "ops_s": 260274.0,
+   "ms_op": 0.004
+  },
+  "js/typed.u8_pixel_loop_64k": {
+   "ops_s": 26976.0,
+   "ms_op": 0.037
+  },
+  "js/string.concat_1k": {
+   "ops_s": 35891.0,
+   "ms_op": 0.028
+  },
+  "js/string.template_1k": {
+   "ops_s": 107977.0,
+   "ms_op": 0.009
+  },
+  "js/string.regex_escape_codes": {
+   "ops_s": 27095.0,
+   "ms_op": 0.037
+  },
+  "js/string.split_join_1k_words": {
+   "ops_s": 13297.0,
+   "ms_op": 0.075
+  },
+  "js/json.parse_1mb": {
+   "ms": 8.4,
+   "min_ms": 7.7,
+   "max_ms": 9.2
+  },
+  "js/json.stringify_1mb": {
+   "ms": 7.7,
+   "min_ms": 5.4,
+   "max_ms": 13.2
+  },
+  "js/map.set_get_1k": {
+   "ops_s": 2363.0,
+   "ms_op": 0.423
+  },
+  "js/call.closure_1k": {
+   "ops_s": 1221319.0,
+   "ms_op": 0.001
+  },
+  "js/call.try_catch_throw_100": {
+   "ops_s": 46905.0,
+   "ms_op": 0.021
+  },
+  "js/gc.churn_10k_small_arrays": {
+   "ops_s": 10879.0,
+   "ms_op": 0.092
+  },
+  "js/promise.chain_10k": {
+   "ms": 0.9,
+   "min_ms": 0.6,
+   "max_ms": 1.7
+  },
+  "dom/dom.create_append_remove_100": {
+   "ops_s": 5267.0,
+   "ms_op": 0.19
+  },
+  "dom/dom.innerhtml_100_rows": {
+   "ops_s": 654.0,
+   "ms_op": 1.53
+  },
+  "dom/dom.query_selector_all_rows": {
+   "ops_s": 71023.0,
+   "ms_op": 0.014
+  },
+  "dom/dom.set_get_attribute_100": {
+   "ops_s": 13428.0,
+   "ms_op": 0.074
+  },
+  "dom/dom.dispatch_event_100": {
+   "ops_s": 4137.0,
+   "ms_op": 0.242
+  },
+  "dom/dom.style_writes_100": {
+   "ops_s": 4799.0,
+   "ms_op": 0.208
+  },
+  "dom/dom.text_content_100": {
+   "ops_s": 10540.0,
+   "ms_op": 0.095
+  },
+  "storage/local_storage.write_100kb_x10": {
+   "ms": 2.6,
+   "min_ms": 2.5,
+   "max_ms": 3.4
+  },
+  "storage/local_storage.read_100kb_x10": {
+   "ms": 0.0,
+   "min_ms": 0.0,
+   "max_ms": 0.3
+  },
+  "storage/indexeddb.put_100kb_x10": {
+   "ms": 4.5,
+   "min_ms": 4.1,
+   "max_ms": 5.3
+  }
+ },
+ "errors": {},
+ "skipped": {
+  "storage/node_fs.write_read_1mb": "no require(fs)"
+ },
+ "pages_done": [
+  "js",
+  "dom",
+  "storage"
+ ]
+}

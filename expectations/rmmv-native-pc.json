@@ -1,0 +1,385 @@
+{
+ "label": "rmmv-ci",
+ "info": {
+  "user_agent": "Mozilla/5.0_(X11;_Linux_aarch64)_rmmv-native/0.1",
+  "platform": "Linux_aarch64",
+  "versions": "node:16.0.0,nw:0.50.0,chrome:90.0.0.0,v8:15.0",
+  "window": "640x480",
+  "device_pixel_ratio": "1.000",
+  "cores": "4.000",
+  "gl_renderer": "llvmpipe_(LLVM_20.1.2,_256_bits)",
+  "gl_version": "WebGL_1.0_(rmmv-native;_OpenGL_ES_3.2_Mesa_25.2.8-0ubuntu0.24.04.4)"
+ },
+ "checks": {
+  "js/es2020": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/async_await": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/class_fields": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/weakref_finalization": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/webassembly": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/text_encoder_decoder": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/structured_clone": {
+   "status": "missing",
+   "detail": ""
+  },
+  "js/intl_number_format": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/shared_array_buffer": {
+   "status": "pass",
+   "detail": ""
+  },
+  "js/worker": {
+   "status": "missing",
+   "detail": ""
+  },
+  "canvas2d/context_2d": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/measuretext_scales": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/measuretext_bounding_box": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/filltext_paints": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/put_get_imagedata_exact": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/composite_modes": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/composite_lighter_adds": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/filter_property": {
+   "status": "missing",
+   "detail": ""
+  },
+  "canvas2d/gradients_patterns": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/line_dash_ellipse": {
+   "status": "fail",
+   "detail": ""
+  },
+  "canvas2d/image_smoothing_off": {
+   "status": "pass",
+   "detail": ""
+  },
+  "canvas2d/todataurl_png": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/append_children": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/innerhtml_parse": {
+   "status": "fail",
+   "detail": "rows 0"
+  },
+  "dom/query_selector": {
+   "status": "fail",
+   "detail": "byclass=false byattr=0"
+  },
+  "dom/get_element_by_id": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/class_list": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/dataset": {
+   "status": "fail",
+   "detail": "attribute null"
+  },
+  "dom/custom_event_dispatch": {
+   "status": "fail",
+   "detail": "threw CustomEvent is not defined"
+  },
+  "dom/event_bubbling": {
+   "status": "fail",
+   "detail": "parent saw 0"
+  },
+  "dom/dom_parser": {
+   "status": "pass",
+   "detail": ""
+  },
+  "dom/mutation_observer": {
+   "status": "missing",
+   "detail": ""
+  },
+  "dom/matches_closest": {
+   "status": "missing",
+   "detail": ""
+  },
+  "dom/clone_node_deep": {
+   "status": "fail",
+   "detail": "cells 0"
+  },
+  "storage/local_storage": {
+   "status": "pass",
+   "detail": ""
+  },
+  "storage/indexeddb_roundtrip": {
+   "status": "missing",
+   "detail": ""
+  },
+  "storage/node_fs": {
+   "status": "pass",
+   "detail": ""
+  }
+ },
+ "times": {
+  "js/loop.int_sum_1k": {
+   "ops_s": 1107615.0,
+   "ms_op": 0.001,
+   "spread": 11.3
+  },
+  "js/math.sin_cos_sqrt_1k": {
+   "ops_s": 6977.0,
+   "ms_op": 0.143,
+   "spread": 8.888
+  },
+  "js/obj.alloc_vec_1k": {
+   "ops_s": 49442.0,
+   "ms_op": 0.02,
+   "spread": 31.6
+  },
+  "js/obj.update_1k_sprites": {
+   "ops_s": 76163.0,
+   "ms_op": 0.013,
+   "spread": 60.2
+  },
+  "js/prop.monomorphic_1k": {
+   "ops_s": 358451.0,
+   "ms_op": 0.003,
+   "spread": 10.6
+  },
+  "js/prop.polymorphic4_1k": {
+   "ops_s": 162865.0,
+   "ms_op": 0.006,
+   "spread": 16.1
+  },
+  "js/prop.dictionary_1k": {
+   "ops_s": 7048.0,
+   "ms_op": 0.142,
+   "spread": 10.4
+  },
+  "js/array.push_pop_1k": {
+   "ops_s": 35086.0,
+   "ms_op": 0.029,
+   "spread": 35.4
+  },
+  "js/array.map_filter_reduce_1k": {
+   "ops_s": 51046.0,
+   "ms_op": 0.02,
+   "spread": 8.662
+  },
+  "js/array.sort_1k_numbers": {
+   "ops_s": 1883.0,
+   "ms_op": 0.531,
+   "spread": 7.718
+  },
+  "js/typed.f32_vertex_fill_4k": {
+   "ops_s": 305578.0,
+   "ms_op": 0.003,
+   "spread": 17.1
+  },
+  "js/typed.u8_pixel_loop_64k": {
+   "ops_s": 37265.0,
+   "ms_op": 0.027,
+   "spread": 9.107
+  },
+  "js/string.concat_1k": {
+   "ops_s": 33817.0,
+   "ms_op": 0.03,
+   "spread": 9.068
+  },
+  "js/string.template_1k": {
+   "ops_s": 77237.0,
+   "ms_op": 0.013,
+   "spread": 8.755
+  },
+  "js/string.regex_escape_codes": {
+   "ops_s": 15470.0,
+   "ms_op": 0.065,
+   "spread": 39.3
+  },
+  "js/string.split_join_1k_words": {
+   "ops_s": 5847.0,
+   "ms_op": 0.171,
+   "spread": 51.7
+  },
+  "js/json.parse_1mb": {
+   "ms": 18.9,
+   "min_ms": 16.1,
+   "max_ms": 23.6
+  },
+  "js/json.stringify_1mb": {
+   "ms": 11.5,
+   "min_ms": 11.2,
+   "max_ms": 13.5
+  },
+  "js/map.set_get_1k": {
+   "ops_s": 1675.0,
+   "ms_op": 0.597,
+   "spread": 19.2
+  },
+  "js/call.closure_1k": {
+   "ops_s": 497685.0,
+   "ms_op": 0.002,
+   "spread": 24.4
+  },
+  "js/call.try_catch_throw_100": {
+   "ops_s": 3919.0,
+   "ms_op": 0.255,
+   "spread": 29.4
+  },
+  "js/gc.churn_10k_small_arrays": {
+   "ops_s": 2325.0,
+   "ms_op": 0.43,
+   "spread": 37.5
+  },
+  "js/promise.chain_10k": {
+   "ms": 3.223,
+   "min_ms": 0.952,
+   "max_ms": 8.267
+  },
+  "canvas2d/drawimage.sprites_32px": {
+   "max60": 152.0
+  },
+  "canvas2d/drawimage.scaled_rotated_32px": {
+   "max60": 23.0
+  },
+  "canvas2d/fillrect.colored_16px": {
+   "max60": 1728.0
+  },
+  "canvas2d/path.arcs_filled": {
+   "max60": 62.0
+  },
+  "canvas2d/text.filltext_100_lines": {
+   "fps": 5.856,
+   "frame_ms": 171.0,
+   "p95_ms": 248.0,
+   "cpu_ms": 157.0
+  },
+  "canvas2d/text.stroked_outlined_40_lines": {
+   "fps": 9.691,
+   "frame_ms": 103.0,
+   "p95_ms": 154.0,
+   "cpu_ms": 90.5
+  },
+  "canvas2d/text.measuretext_100": {
+   "ops_s": 727.0,
+   "ms_op": 1.375,
+   "spread": 68.6
+  },
+  "canvas2d/drawimage.full_640x480_canvas": {
+   "fps": 98.3,
+   "frame_ms": 10.2,
+   "p95_ms": 18.9,
+   "cpu_ms": 1.56
+  },
+  "canvas2d/imagedata.get_640x480": {
+   "ms": 19.5,
+   "min_ms": 17.6,
+   "max_ms": 29.5
+  },
+  "canvas2d/imagedata.put_640x480": {
+   "ms": 11.9,
+   "min_ms": 7.356,
+   "max_ms": 21.8
+  },
+  "dom/dom.create_append_remove_100": {
+   "ops_s": 13553.0,
+   "ms_op": 0.074,
+   "spread": 35.7
+  },
+  "dom/dom.innerhtml_100_rows": {
+   "ops_s": 10042.0,
+   "ms_op": 0.1,
+   "spread": 21.6
+  },
+  "dom/dom.query_selector_all_rows": {
+   "ops_s": 766783415.0,
+   "ms_op": 0.0,
+   "spread": 11.1
+  },
+  "dom/dom.set_get_attribute_100": {
+   "ops_s": 14292.0,
+   "ms_op": 0.07,
+   "spread": 51.3
+  },
+  "dom/dom.dispatch_event_100": {
+   "ops_s": 35547.0,
+   "ms_op": 0.028,
+   "spread": 12.7
+  },
+  "dom/dom.style_writes_100": {
+   "ops_s": 25847.0,
+   "ms_op": 0.039,
+   "spread": 53.4
+  },
+  "dom/dom.text_content_100": {
+   "ops_s": 213679.0,
+   "ms_op": 0.005,
+   "spread": 37.8
+  },
+  "storage/local_storage.write_100kb_x10": {
+   "ms": 0.009,
+   "min_ms": 0.007,
+   "max_ms": 0.128
+  },
+  "storage/local_storage.read_100kb_x10": {
+   "ms": 0.007,
+   "min_ms": 0.005,
+   "max_ms": 0.096
+  },
+  "storage/node_fs.write_read_1mb": {
+   "ms": 21.0,
+   "min_ms": 20.4,
+   "max_ms": 25.5
+  }
+ },
+ "errors": {},
+ "skipped": {
+  "storage/indexeddb.put_100kb_x10": "no indexedDB"
+ },
+ "pages_done": [
+  "js",
+  "canvas2d",
+  "dom",
+  "storage"
+ ]
+}

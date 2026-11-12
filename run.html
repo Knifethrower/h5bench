@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>h5bench</title>
+</head>
+<body style="background:#111;color:#ddd;margin:0">
+    <script src="bench/harness.js"></script>
+    <script src="bench/boot.js"></script>
+    <script src="bench/modules.js"></script>
+    <script>
+      // run.html?pages=webgl,js (default: every module in bench/modules.js); other options as on every page.
+      (function () {
+        const want = (H5B.query.pages || "").split(",").filter(Boolean);
+        const pages = want.length ? want.filter((p) => H5B.MODULES.includes(p)) : H5B.MODULES.slice();
+        let i = 0;
+        const next = () => {
+          if (i === pages.length) { H5B.run(pages); return; }
+          const s = document.createElement("script");
+          s.src = "bench/" + pages[i++] + ".js";
+          s.onload = next;
+          s.onerror = () => { H5B.out("H5B-ERROR run module_" + pages[i - 1] + " cannot_load"); next(); };
+          document.body.appendChild(s);
+        };
+        if (document.readyState === "complete") next(); else window.addEventListener("load", next);
+      })();
+    </script>
+</body>
+</html>

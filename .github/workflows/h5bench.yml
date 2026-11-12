@@ -1,0 +1,35 @@
+# h5bench in CI: every page in headless Chrome, judged against expectations/chrome-headless.json.
+# New gaps fail the job; timing regressions are listed as warnings (shared runners are noisy; add
+# --fail-on gaps,regressions on a dedicated machine). Results, JUnit and the summary are kept as an artifact.
+name: h5bench
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  chrome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run h5bench in headless Chrome
+        run: >
+          python3 tools/h5bench.py ci --browser chrome --label chrome-ci
+          --baseline expectations/chrome-headless.json
+          --junit results/junit.xml --summary "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h5bench-chrome
+          path: results/
+  # An engine with a Linux build: one page per run, its console output collected. Replace ENGINE and its options.
+  engine:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y xvfb
+      - name: Run h5bench on the engine
+        run: >
+          xvfb-run -a python3 tools/h5bench.py ci --label engine-ci
+          --engine 'ENGINE --game {dir} --page {page} --window 640x480'
+          --baseline expectations/engine.json --junit results/junit.xml --summary "$GITHUB_STEP_SUMMARY"
