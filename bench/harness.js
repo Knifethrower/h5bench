@@ -20,7 +20,9 @@
   })();
   const fmt = (v) => (typeof v === "number" ? (Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 10 ? v.toFixed(1) : v.toFixed(3)) : String(v).replace(/\s+/g, "_"));
   const lines = [];
-  const out = (s) => { lines.push(s); try { console.log(s); } catch (_) {} if (H5B.onLine) H5B.onLine(s); };
+  // With ?post=<url>, every line also goes to <url>/progress as it is made, so a run that hangs still shows where.
+  const progress = (s) => { try { const x = new XMLHttpRequest(); x.open("POST", query.post + "/progress"); x.send(s); } catch (_) {} };
+  const out = (s) => { lines.push(s); try { console.log(s); } catch (_) {} if (H5B.onLine) H5B.onLine(s); if (query.post) progress(s); };
 
   // Deterministic numbers (mulberry32), so every engine does the same work.
   const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -93,7 +95,9 @@
     },
     // Frames: frame(t, i) runs in requestAnimationFrame for `seconds`; reports fps, frame times and the time
     // spent inside the callback (cpu_ms). GPU work shows in fps and frame_ms, not in cpu_ms.
-    frames(name, { setup, frame, teardown, seconds = 3 } = {}) {
+    // sync(ctx): called after each frame, inside its timing (a 1x1 readback), so GPU work counts even where
+    // requestAnimationFrame does not wait for the GPU (headless browsers queue frames without limit).
+    frames(name, { setup, frame, teardown, sync, seconds = 3 } = {}) {
       return new Promise((resolve) => {
         let ctx;
         Promise.resolve(setup ? setup() : undefined).then((c) => {
@@ -104,7 +108,7 @@
             const t = now();
             if (last) dts.push(t - last);
             last = t;
-            try { frame(ctx, i++, t); } catch (e) { H5B.error(name, e); finish(true); return; }
+            try { frame(ctx, i++, t); if (sync) sync(ctx); } catch (e) { H5B.error(name, e); finish(true); return; }
             cpus.push(now() - t);
             if (t - t0 < seconds * 1000) raf(step); else finish(false);
           };
@@ -126,7 +130,7 @@
     },
     // Capacity: frame(ctx, n) draws n items; n is raised and lowered in 0.6 s windows until the largest n that
     // still averages under 1000/55 ms a frame. max60 is engine-independent of the display's vsync cap.
-    ramp(name, { setup, frame, teardown, start = 64, limit = 1 << 17, windowMs = 600 } = {}) {
+    ramp(name, { setup, frame, teardown, sync, start = 64, limit = 1 << 17, windowMs = 600 } = {}) {
       return new Promise((resolve) => {
         Promise.resolve(setup ? setup() : undefined).then((ctx) => {
           let n = start, lo = 0, hi = 0, last = 0, wstart = 0, count = 0, sum = 0, phase = "up", steps = 0;
@@ -135,7 +139,7 @@
             const t = now();
             if (last) { sum += t - last; count++; }
             last = t;
-            try { frame(ctx, n); } catch (e) { H5B.error(name, e); done(); return; }
+            try { frame(ctx, n); if (sync) sync(ctx); } catch (e) { H5B.error(name, e); done(); return; }
             if (!wstart) wstart = t;
             if (t - wstart >= windowMs && count > 3) {
               const avg = sum / count; const ok = avg <= budget;

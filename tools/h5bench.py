@@ -239,26 +239,43 @@ def ci(args, opt):
     if opt("--browser"):
         got = threading.Event()
         httpd = make_server(0, lambda name: got.set())
+        httpd.echo = "--quiet" not in args  # the CI log shows the run as it goes
         threading.Thread(target=httpd.serve_forever, daemon=True).start()
         url = f"http://127.0.0.1:{httpd.server_address[1]}/run.html?pages={','.join(pages)}&post=/results&label={label}"
         flags = ["--headless=new", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--window-size=640,480"]
         if "--gpu" not in args:
             flags += ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"]  # same GL on every CI machine
-        with tempfile.TemporaryDirectory() as prof:
-            proc = subprocess.Popen([find_browser(opt("--browser")), *flags, f"--user-data-dir={prof}", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # The browser's whole process tree ends with the run (a timeout too); its throwaway profile may still be
+        # locked for a moment on Windows, so cleanup errors are ignored.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as prof:
+            kw = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt" else {"start_new_session": True}
+            proc = subprocess.Popen([find_browser(opt("--browser")), *flags, f"--user-data-dir={prof}", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kw)
             ok = got.wait(timeout)
-            proc.terminate()
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)], capture_output=True)
+            else:
+                import signal
+                try:
+                    os.killpg(proc.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
             try:
                 proc.wait(10)
             except subprocess.TimeoutExpired:
                 proc.kill()
-            time.sleep(1)
+            time.sleep(2)
         httpd.shutdown()
         if not ok:
-            print("no results within the timeout")
-            return 2
-        log = os.path.join(ROOT, "results", httpd.last_name + ".log")
-        lines = open(log, encoding="utf-8").read().splitlines()
+            # Where it stopped: the streamed lines up to the hang, judged like a finished run.
+            last = next((l for l in reversed(httpd.progress) if l.startswith(("H5B ", "H5B-CHECK", "H5B-ERROR", "H5B-SKIP", "H5B-DONE"))), "nothing")
+            print(f"no results within {timeout:.0f} s; {len(httpd.progress)} lines streamed, the last: {last}")
+            if not httpd.progress:
+                return 2
+            lines = httpd.progress + [f"H5B-ERROR {last.split(' ')[1] if ' ' in last else 'run'} run_timeout after_{last.replace(' ', '_')[:80]}"]
+        else:
+            lines = None
+        if lines is None:
+            lines = open(os.path.join(ROOT, "results", httpd.last_name + ".log"), encoding="utf-8").read().splitlines()
     else:
         tpl = opt("--engine")
         if not tpl:
@@ -321,6 +338,14 @@ def make_server(port, on_result=None):
         def log_message(self, *a):
             pass
         def do_POST(self):
+            if self.path.split("?")[0] == "/results/progress":
+                line = self.rfile.read(int(self.headers.get("Content-Length", 0))).decode("utf-8", "replace")
+                self.server.progress.append(line)
+                if getattr(self.server, "echo", False):
+                    print("  " + line, flush=True)
+                self.send_response(204)
+                self.end_headers()
+                return
             if self.path.split("?")[0] != "/results":
                 self.send_error(404)
                 return
@@ -340,6 +365,7 @@ def make_server(port, on_result=None):
 
     httpd = http.server.ThreadingHTTPServer(("", port), functools.partial(Handler, directory=ROOT))
     httpd.last_name = None
+    httpd.progress = []
     return httpd
 
 

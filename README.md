@@ -102,6 +102,12 @@ xvfb-run -a python3 tools/h5bench.py ci --engine 'ENGINE --game {dir} --page {pa
 python3 tools/h5bench.py ci --browser chrome --save-baseline expectations/chrome-headless.json
 ```
 
+Headless browsers run on SwiftShader (software GL) unless `--gpu`: fine for checks and JS, while GPU timings
+there say little about real hardware. Every WebGL and Canvas 2D frame test ends its frame with a 1x1 readback, so
+frames wait for the GPU even where requestAnimationFrame does not (headless browsers otherwise queue frames
+without limit). While a run goes, pages opened with `?post` stream each line to the server, and `ci` prints them,
+so a run that hangs shows the test it stopped in.
+
 `--junit` writes JUnit XML (one test case per check and timing), `--summary` appends Markdown (on GitHub:
 `$GITHUB_STEP_SUMMARY`). `.github/workflows/h5bench.yml` runs every page in headless Chrome on each push, with an
 engine job to copy for engines that have a Linux build.
