@@ -158,6 +158,86 @@
   "storage/node_fs": {
    "status": "pass",
    "detail": ""
+  },
+  "webgl2/context.webgl2": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/state.limits_minimums": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/glsl.es300_compile_link": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/state.vertex_array_object": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/rendering.instanced_instance_id": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/rendering.multiple_render_targets": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/textures.tex_storage_immutable": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/textures.3d_and_2d_array_texel_fetch": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/buffers.uniform_buffer_object": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/buffers.transform_feedback": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/buffers.copy_buffer_sub_data": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/textures.sampler_objects": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/textures.integer_formats": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/rendering.float_render_target": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/rendering.msaa_renderbuffer_blit_resolve": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/buffers.pixel_pack_buffer_readback": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/state.fence_sync": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/state.occlusion_query_api": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/textures.npot_mipmap_repeat": {
+   "status": "missing",
+   "detail": ""
+  },
+  "webgl2/state.no_gl_errors_so_far": {
+   "status": "missing",
+   "detail": ""
   }
  },
  "times": {
@@ -374,9 +454,19 @@
  },
  "errors": {},
  "skipped": {
-  "storage/indexeddb.put_100kb_x10": "no indexedDB"
+  "storage/indexeddb.put_100kb_x10": "no indexedDB",
+  "webgl2/instanced.sprites_32px": "no WebGL 2",
+  "webgl2/ubo.update_and_draw_each": "no WebGL 2",
+  "webgl2/state.vao_switches": "no WebGL 2",
+  "webgl2/mrt.gbuffer_4_targets_2000_sprites": "no WebGL 2",
+  "webgl2/texarray.sprites_8_layers": "no WebGL 2",
+  "webgl2/tf.particles_100k_update_and_draw": "no WebGL 2",
+  "webgl2/msaa.4x_2000_sprites_resolve": "no WebGL 2",
+  "webgl2/float.rgba16f_target_2000_sprites": "no WebGL 2",
+  "webgl2/readback.pbo_fenced_640x480": "no WebGL 2"
  },
  "pages_done": [
+  "webgl2",
   "js",
   "canvas2d",
   "dom",

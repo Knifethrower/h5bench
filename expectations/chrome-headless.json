@@ -11,7 +11,15 @@
   "max_texture_size": "8192",
   "audio_types": "ogg:probably,ogg:probably,mpeg:probably,mp4:maybe,wav:maybe",
   "video_types": "webm:probably,webm:probably,mp4:probably",
-  "now_resolution_ms": "0.100"
+  "now_resolution_ms": "0.100",
+  "limit_max_draw_buffers": "8.000",
+  "limit_max_color_attachments": "8.000",
+  "limit_max_3d_texture_size": "2048",
+  "limit_max_array_texture_layers": "2048",
+  "limit_max_uniform_buffer_bindings": "72.0",
+  "limit_max_uniform_block_size": "65536",
+  "limit_max_samples": "4.000",
+  "limit_max_transform_feedback_separate_attribs": "4.000"
  },
  "checks": {
   "js/es2020": {
@@ -332,6 +340,86 @@
   },
   "storage/node_fs": {
    "status": "missing",
+   "detail": ""
+  },
+  "webgl2/context.webgl2": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/state.limits_minimums": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/glsl.es300_compile_link": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/state.vertex_array_object": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/rendering.instanced_instance_id": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/rendering.multiple_render_targets": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/textures.tex_storage_immutable": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/textures.3d_and_2d_array_texel_fetch": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/buffers.uniform_buffer_object": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/buffers.transform_feedback": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/buffers.copy_buffer_sub_data": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/textures.sampler_objects": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/textures.integer_formats": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/rendering.float_render_target": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/rendering.msaa_renderbuffer_blit_resolve": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/buffers.pixel_pack_buffer_readback": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/state.fence_sync": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/state.occlusion_query_api": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/textures.npot_mipmap_repeat": {
+   "status": "pass",
+   "detail": ""
+  },
+  "webgl2/state.no_gl_errors_so_far": {
+   "status": "pass",
    "detail": ""
   }
  },
@@ -687,6 +775,47 @@
    "ms": 5.4,
    "min_ms": 3.2,
    "max_ms": 6.4
+  },
+  "webgl2/instanced.sprites_32px": {
+   "max60": 1088.0
+  },
+  "webgl2/ubo.update_and_draw_each": {
+   "max60": 15.0
+  },
+  "webgl2/state.vao_switches": {
+   "max60": 224.0
+  },
+  "webgl2/mrt.gbuffer_4_targets_2000_sprites": {
+   "fps": 25.0,
+   "frame_ms": 39.9,
+   "p95_ms": 43.6,
+   "cpu_ms": 39.5
+  },
+  "webgl2/texarray.sprites_8_layers": {
+   "max60": 1024.0
+  },
+  "webgl2/tf.particles_100k_update_and_draw": {
+   "fps": 40.8,
+   "frame_ms": 24.5,
+   "p95_ms": 27.8,
+   "cpu_ms": 24.2
+  },
+  "webgl2/msaa.4x_2000_sprites_resolve": {
+   "fps": 25.6,
+   "frame_ms": 39.1,
+   "p95_ms": 45.3,
+   "cpu_ms": 38.6
+  },
+  "webgl2/float.rgba16f_target_2000_sprites": {
+   "fps": 23.0,
+   "frame_ms": 43.5,
+   "p95_ms": 48.2,
+   "cpu_ms": 43.0
+  },
+  "webgl2/readback.pbo_fenced_640x480": {
+   "ms": 7.2,
+   "min_ms": 5.6,
+   "max_ms": 17.4
   }
  },
  "errors": {},
@@ -696,6 +825,7 @@
  "pages_done": [
   "js",
   "webgl",
+  "webgl2",
   "canvas2d",
   "layout",
   "dom",
