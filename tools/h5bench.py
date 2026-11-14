@@ -12,13 +12,17 @@
       runs headless, judges against the baseline: exit 1 on new gaps or regressions, 2 on no results
 
 <base>, <new>, <run> are logs or JSON files from `parse`. Output is Markdown.
-Metrics: ops_s, fps, max60 are higher-is-better; ms, ms_op, frame_ms, p95_ms, cpu_ms lower-is-better."""
+Metrics: ops_s, fps, max60 are higher-is-better; ms, ms_op, frame_ms, p95_ms, max_ms, cpu_ms and the memory
+metrics (pause_ms, bytes, heap_mb, rss_mb, rss_growth_mb, heap_growth_mb) lower-is-better."""
 import json, os, re, sys
 
 HIGHER = {"ops_s", "fps", "max60"}
-LOWER = {"ms", "ms_op", "frame_ms", "p95_ms", "cpu_ms", "min_ms", "max_ms"}
-# The metric a test is judged by, in this order.
-PRIMARY = ["ops_s", "max60", "ms", "frame_ms"]
+LOWER = {"ms", "ms_op", "frame_ms", "p95_ms", "cpu_ms", "min_ms", "max_ms",
+         "pause_ms", "pauses", "gc_pct", "bytes", "heap_mb", "rss_mb", "rss_peak_mb", "rss_growth_mb", "heap_growth_mb"}
+# The metric a test is judged by, in this order (memory tests also print ops_s or frame_ms: their own metric comes first).
+PRIMARY = ["pause_ms", "bytes", "rss_growth_mb", "heap_growth_mb", "rss_mb", "heap_mb", "ops_s", "max60", "ms", "frame_ms"]
+# Values this close to zero are noise (a 0.3 ms pause, 0.2 MB of growth): ratios are taken on value + floor.
+FLOOR = {"pause_ms": 2.0, "rss_growth_mb": 2.0, "heap_growth_mb": 1.0}
 
 
 def parse_log(path, label=None):
@@ -87,9 +91,10 @@ def compare(base, new, threshold):
     for name in sorted(set(base["times"]) & set(new["times"])):
         k, a = primary(base["times"][name])
         b = new["times"][name].get(k) if k else None
-        if k is None or b is None or a in (0, None):
+        r = ratio(k, a, b) if k else None
+        if r is None:
             continue
-        change = (b - a) / a * 100 if k in HIGHER else (a - b) / a * 100  # positive = better
+        change = (r - 1) * 100  # positive = better
         row = f"| {name} | {k} | {fmt(a)} | {fmt(b)} | {change:+.0f}% |"
         if change <= -threshold:
             regress.append((change, row))
@@ -151,7 +156,11 @@ def modules():
 
 def ratio(metric, ref, new):
     """new relative to ref, >1 = better, by the metric's direction."""
-    if not ref or not new:
+    if ref is None or new is None:
+        return None
+    if metric in FLOOR:  # growth can be zero or negative: compare above a noise floor
+        ref, new = max(ref, 0) + FLOOR[metric], max(new, 0) + FLOOR[metric]
+    if ref <= 0 or new <= 0:
         return None
     return new / ref if metric in HIGHER else ref / new
 
@@ -242,7 +251,9 @@ def ci(args, opt):
         httpd.echo = "--quiet" not in args  # the CI log shows the run as it goes
         threading.Thread(target=httpd.serve_forever, daemon=True).start()
         url = f"http://127.0.0.1:{httpd.server_address[1]}/run.html?pages={','.join(pages)}&post=/results&label={label}"
-        flags = ["--headless=new", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--window-size=640,480"]
+        flags = ["--headless=new", "--no-first-run", "--no-default-browser-check", "--autoplay-policy=no-user-gesture-required", "--window-size=640,480",
+                 # the memory page: exact performance.memory readings and a gc() that collects
+                 "--enable-precise-memory-info", "--js-flags=--expose-gc"]
         if "--gpu" not in args:
             flags += ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"]  # same GL on every CI machine
         # The browser's whole process tree ends with the run (a timeout too); its throwaway profile may still be

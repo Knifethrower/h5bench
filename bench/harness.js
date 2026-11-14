@@ -6,7 +6,8 @@
 //   H5B-ERROR <page> <name> <message>                      a test threw: counts as a gap
 //   H5B-SKIP  <page> <name> <why>                          not run: its API is missing (see the check)
 //   H5B-DONE  <page> <seconds>
-// Metrics: ops_s (higher better), ms / frame_ms / p95_ms / cpu_ms (lower better), fps, max60 (higher better).
+// Metrics: ops_s, fps, max60 (higher better); ms, frame_ms, p95_ms, max_ms, cpu_ms (lower better); memory:
+// pause_ms (longest GC stall), bytes (per object), heap_mb, rss_mb, *_growth_mb (lower better).
 // Pages pick their tests with H5B.page(name, [tests]); run.html?only=a,b runs a subset in browsers.
 "use strict";
 (function () {
@@ -93,11 +94,14 @@
         out(`H5B ${H5B.pageName} ${name} ms=${fmt(med)} min_ms=${fmt(ts[0])} max_ms=${fmt(ts[ts.length - 1])}`);
       } catch (e) { H5B.error(name, e); }
     },
-    // Frames: frame(t, i) runs in requestAnimationFrame for `seconds`; reports fps, frame times and the time
-    // spent inside the callback (cpu_ms). GPU work shows in fps and frame_ms, not in cpu_ms.
+    // Frames: frame(t, i) runs in requestAnimationFrame for `seconds`; reports fps, frame times (average, 95th
+    // percentile, worst: max_ms is where a GC pause or a shader compile shows) and the time spent inside the
+    // callback (cpu_ms). GPU work shows in fps and frame_ms, not in cpu_ms.
     // sync(ctx): called after each frame, inside its timing (a 1x1 readback), so GPU work counts even where
     // requestAnimationFrame does not wait for the GPU (headless browsers queue frames without limit).
-    frames(name, { setup, frame, teardown, sync, seconds = 3 } = {}) {
+    // gc: true adds pause_ms, the slowest callback minus the median one: the longest stall inside a frame, where
+    // the collections that allocation sets off run (judged by it, not by frame_ms).
+    frames(name, { setup, frame, teardown, sync, seconds = 3, gc = false } = {}) {
       return new Promise((resolve) => {
         let ctx;
         Promise.resolve(setup ? setup() : undefined).then((c) => {
@@ -117,9 +121,11 @@
               if (!failed && dts.length > 2) {
                 const s = dts.slice(2).sort((a, b) => a - b);
                 const avg = s.reduce((a, b) => a + b, 0) / s.length;
-                const cpu = cpus.slice(2).reduce((a, b) => a + b, 0) / Math.max(1, cpus.length - 2);
-                H5B.results.push({ kind: "time", name, fps: 1000 / avg, frame_ms: avg, p95_ms: s[Math.floor(s.length * 0.95)], cpu_ms: cpu });
-                out(`H5B ${H5B.pageName} ${name} fps=${fmt(1000 / avg)} frame_ms=${fmt(avg)} p95_ms=${fmt(s[Math.floor(s.length * 0.95)])} cpu_ms=${fmt(cpu)}`);
+                const c = cpus.slice(2), cpu = c.reduce((a, b) => a + b, 0) / Math.max(1, c.length);
+                const m = { fps: 1000 / avg, frame_ms: avg, p95_ms: s[Math.floor(s.length * 0.95)], max_ms: s[s.length - 1] };
+                if (gc) { const cs = c.slice().sort((a, b) => a - b); m.pause_ms = cs[cs.length - 1] - cs[cs.length >> 1]; }
+                m.cpu_ms = cpu;
+                H5B.report(name, m);
               }
               resolve();
             });
@@ -162,6 +168,44 @@
         }).catch((e) => { H5B.error(name, e); resolve(); });
       });
     },
+    // A timing with its own metrics ({name: number}); null or NaN values are left out.
+    report(name, metrics) {
+      const m = {};
+      for (const [k, v] of Object.entries(metrics)) if (typeof v === "number" && isFinite(v)) m[k] = v;
+      H5B.results.push(Object.assign({ kind: "time", name }, m));
+      out(`H5B ${H5B.pageName} ${name} ` + Object.entries(m).map(([k, v]) => `${k}=${fmt(v)}`).join(" "));
+    },
+    // Memory now, in MB, from whatever the engine has: the JS heap from process.memoryUsage() (Node, NW.js,
+    // Electron) or performance.memory (Chrome; precise only with --enable-precise-memory-info), the process RSS
+    // from process.memoryUsage() or /proc/self/status (Linux engines with Node fs), and the peak RSS (VmHWM).
+    // A source that reads zero is a stub: stub names it. Missing values are null.
+    memory() {
+      const r = { heap: null, rss: null, peak: null, heapSrc: null, rssSrc: null, stub: null };
+      const MB = 1048576;
+      try {
+        if (typeof process === "object" && process && typeof process.memoryUsage === "function") {
+          const u = process.memoryUsage();
+          if (u && u.heapUsed > 0) { r.heap = u.heapUsed / MB; r.heapSrc = "process.memoryUsage"; } else r.stub = "process.memoryUsage()";
+          if (u && u.rss > 0) { r.rss = u.rss / MB; r.rssSrc = "process.memoryUsage"; }
+          if (typeof process.resourceUsage === "function") { const ru = process.resourceUsage(); if (ru && ru.maxRSS > 0) r.peak = ru.maxRSS / 1024; }
+        }
+      } catch (_) {}
+      try {
+        const pm = g.performance && performance.memory;
+        if (r.heap === null && pm) { if (pm.usedJSHeapSize > 0) { r.heap = pm.usedJSHeapSize / MB; r.heapSrc = "performance.memory"; } else r.stub = r.stub || "performance.memory"; }
+      } catch (_) {}
+      if (r.rss === null || r.peak === null) {
+        try {
+          if (typeof require === "function") {
+            const s = String(require("fs").readFileSync("/proc/self/status", "utf8"));
+            const kb = (k) => { const m = s.match(new RegExp("^" + k + ":\\s*(\\d+)", "m")); return m ? Number(m[1]) / 1024 : null; };
+            if (r.rss === null && kb("VmRSS")) { r.rss = kb("VmRSS"); r.rssSrc = "/proc/self/status"; }
+            if (r.peak === null && kb("VmHWM")) r.peak = kb("VmHWM");
+          }
+        } catch (_) {}
+      }
+      return r;
+    },
     // A timing whose API is missing (its check already says so): not run, not a second gap.
     skip(name, why) { H5B.results.push({ kind: "skip", name }); out(`H5B-SKIP ${H5B.pageName} ${name} ${String(why).replace(/\s+/g, "_")}`); },
     error(name, e) {
@@ -183,6 +227,9 @@
           try { await fn(); } catch (e) { H5B.error(name, e); }
           await new Promise((r) => setTimeout(r, 30)); // let the engine settle between tests
         }
+        // Memory after each page, where the engine has a reading (in one run of all pages it adds up).
+        const mem = H5B.memory();
+        if (mem.heap !== null || mem.rss !== null) H5B.info("memory_after_" + page, [["heap", mem.heap], ["rss", mem.rss], ["peak_rss", mem.peak]].filter((x) => x[1] !== null).map((x) => x[0] + " " + fmt(x[1]) + " MB").join(", "));
         out(`H5B-DONE ${page} ${fmt((now() - t0) / 1000)}`);
       }
       out("H5B-ALLDONE");

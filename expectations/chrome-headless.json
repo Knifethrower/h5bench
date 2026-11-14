@@ -421,6 +421,14 @@
   "webgl2/state.no_gl_errors_so_far": {
    "status": "pass",
    "detail": ""
+  },
+  "memory/js_heap_readable": {
+   "status": "pass",
+   "detail": ""
+  },
+  "memory/process_rss_readable": {
+   "status": "missing",
+   "detail": ""
   }
  },
  "times": {
@@ -816,6 +824,93 @@
    "ms": 7.2,
    "min_ms": 5.6,
    "max_ms": 17.4
+  },
+  "memory/footprint.settled": {
+   "heap_mb": 0.764
+  },
+  "memory/bytes.object_3_ints": {
+   "bytes": 24
+  },
+  "memory/bytes.object_3_doubles": {
+   "bytes": 60
+  },
+  "memory/bytes.array_8_doubles": {
+   "bytes": 88
+  },
+  "memory/bytes.float32array_16": {
+   "bytes": 184
+  },
+  "memory/bytes.closure": {
+   "bytes": 48
+  },
+  "memory/bytes.map_entry": {
+   "bytes": 18.4
+  },
+  "memory/bytes.json_record_4_fields": {
+   "bytes": 56
+  },
+  "memory/gc.short_lived_objects": {
+   "pause_ms": 1.2,
+   "pauses": 8,
+   "gc_pct": 0.352,
+   "ops_s": 88994328
+  },
+  "memory/gc.long_lived_records_replaced": {
+   "pause_ms": 175,
+   "pauses": 29,
+   "gc_pct": 49.3,
+   "ops_s": 5773765
+  },
+  "memory/gc.typed_array_16kb_garbage": {
+   "pause_ms": 11.9,
+   "pauses": 256,
+   "gc_pct": 26.9,
+   "ops_s": 171934
+  },
+  "memory/gc.string_garbage": {
+   "pause_ms": 2.8,
+   "pauses": 71,
+   "gc_pct": 4.159,
+   "ops_s": 14505609
+  },
+  "memory/frames.garbage_40k_objects_each": {
+   "fps": 60,
+   "frame_ms": 16.7,
+   "p95_ms": 18.3,
+   "max_ms": 29,
+   "pause_ms": 0.7,
+   "cpu_ms": 0.612
+  },
+  "memory/frames.records_replaced_2000_each": {
+   "fps": 59.8,
+   "frame_ms": 16.7,
+   "p95_ms": 18,
+   "max_ms": 49.4,
+   "pause_ms": 1.4,
+   "cpu_ms": 0.482
+  },
+  "memory/frames.mat4_per_sprite_2000": {
+   "fps": 60,
+   "frame_ms": 16.7,
+   "p95_ms": 18,
+   "max_ms": 18.7,
+   "pause_ms": 0.5,
+   "cpu_ms": 0.204
+  },
+  "memory/leak.webgl_texture_1mb_x100": {
+   "heap_growth_mb": 0
+  },
+  "memory/leak.webgl_buffer_1mb_x100": {
+   "heap_growth_mb": 0
+  },
+  "memory/leak.canvas2d_512px_x100": {
+   "heap_growth_mb": 0
+  },
+  "memory/leak.image_load_upload_1024px_x30": {
+   "heap_growth_mb": 0
+  },
+  "memory/leak.audio_decode_ogg_10s_x20": {
+   "heap_growth_mb": 0
   }
  },
  "errors": {},
@@ -831,6 +926,7 @@
   "dom",
   "media",
   "timing",
-  "storage"
+  "storage",
+  "memory"
  ]
 }

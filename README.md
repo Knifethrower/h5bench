@@ -17,7 +17,8 @@ Each area has its own page, so a regression or a gap shows up on the page it bel
 | `media.html` | PNG decoding (256 to 2048 px), image upload to WebGL and first 2D draw, ImageBitmap, blob URLs, Web Audio (node types, AudioWorklet, WAV and OGG decoding, starting sources every frame), audio and video codec answers |
 | `timing.html` | requestAnimationFrame cadence (idle and with 8 ms of work), setTimeout and setInterval accuracy, performance.now resolution, MessageChannel, queueMicrotask, page visibility |
 | `storage.html` | localStorage, IndexedDB and Node `fs` (NW.js-style saves): checks and write/read times |
-| `index.html` | All pages in order (about 6-10 minutes). Engines usually boot `index.html` |
+| `memory.html` | JS heap and process RSS (footprint after a GC), what common objects cost in bytes (objects with ints or doubles, arrays, Float32Array(16), closures, Map entries, JSON game records), garbage collector pauses in a tight loop (short-lived objects, long-lived records replaced, typed-array and string garbage) and in frames (worst frame next to p95), and leaks: memory not given back after creating and dropping textures, buffers, canvases, images and decoded sounds. Checks: a heap reading that follows allocations, an RSS reading |
+| `index.html` | All pages in order (about 7-11 minutes). Engines usually boot `index.html` |
 
 ## Results
 
@@ -33,9 +34,20 @@ H5B-DONE  <page> <seconds>
 ```
 
 Metrics: `ops_s` (work units per second), `max60` (the most items that still run at 55+ fps: draw calls,
-sprites, full-screen layers), `fps`, `frame_ms`, `p95_ms`, `cpu_ms` (time inside the frame callback), `ms`
-(median of several runs). `max60` does not depend on the display's refresh cap, so it compares engines and
-devices well.
+sprites, full-screen layers), `fps`, `frame_ms`, `p95_ms`, `max_ms` (the worst frame: GC pauses and shader
+compiles show here), `cpu_ms` (time inside the frame callback), `ms` (median of several runs). `max60` does not
+depend on the display's refresh cap, so it compares engines and devices well.
+
+Memory metrics: `pause_ms` (the longest garbage collector stall: in a loop, the slowest batch of work minus the
+median one; in frames, the slowest frame callback minus the median one), `pauses` (stalls over 1 ms), `gc_pct`
+(their share of the run), `bytes` (per object, with the array slot that holds it), `heap_mb` and `rss_mb` (after a
+GC), `rss_growth_mb` and `heap_growth_mb` (what a second round of create-and-drop cycles kept). Readings come
+from `process.memoryUsage()` (Node, NW.js, Electron), `performance.memory` (Chrome, exact only with
+`--enable-precise-memory-info`) or `/proc/self/status` (Linux engines with Node `fs`); pages without one report
+the checks as gaps and skip the byte and leak tests, while the pause tests need nothing. A real `gc()` (V8's
+`--expose-gc`) makes the readings exact: `H5B-INFO memory forced_gc=works|no-op|unverified|none` says which.
+Every page ends with `H5B-INFO <page> memory_after_<page>=...` where a reading exists (in one run of all pages
+it adds up).
 
 Browsers also print the lines on the page. `?only=a,b` runs only the tests whose names start with those prefixes
 (for example `webgl.html?only=check,sprites`). The URL options (`only`, `label`, `post`, `download`, `close`,
@@ -84,7 +96,10 @@ an area: write the module, add it to the list, run `make_pages.py`. A test is on
 - `H5B.once(name, fn)`: median of several runs.
 - `H5B.frames(name, {frame})`: frame times over a few seconds.
 - `H5B.ramp(name, {frame(ctx, n)})`: MotionMark-style, the most `n` that still holds 55+ fps.
+- `H5B.report(name, {metric: value})`: a timing with its own metrics (the memory page uses it).
 - `H5B.skip(name, why)`: when the API is missing.
+
+`H5B.memory()` returns the heap, RSS and peak RSS in MB (null where the engine has no reading).
 
 ## CI
 
@@ -104,7 +119,9 @@ python3 tools/h5bench.py ci --browser chrome --save-baseline expectations/chrome
 ```
 
 Headless browsers run on SwiftShader (software GL) unless `--gpu`: fine for checks and JS, while GPU timings
-there say little about real hardware. Every WebGL and Canvas 2D frame test ends its frame with a 1x1 readback, so
+there say little about real hardware. `ci` also starts Chrome with `--enable-precise-memory-info` and
+`--js-flags=--expose-gc` for the memory page. Pause and growth metrics near zero are noise, so they are
+compared above a floor (2 ms; 2 MB of RSS, 1 MB of heap). Every WebGL and Canvas 2D frame test ends its frame with a 1x1 readback, so
 frames wait for the GPU even where requestAnimationFrame does not (headless browsers otherwise queue frames
 without limit). While a run goes, pages opened with `?post` stream each line to the server, and `ci` prints them,
 so a run that hangs shows the test it stopped in.
